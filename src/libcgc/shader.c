@@ -958,7 +958,8 @@ printf("----------------------------------------------------------------\n");
 			} else if (alu_sched[i]) {
 				print_tex(i, i + 1);
 				print_alu(ai++, alu_sched[i]);
-			}
+			} else
+				print_tex(i, i + 1);
 		}
 	}
 }
