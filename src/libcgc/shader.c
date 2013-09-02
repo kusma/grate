@@ -908,39 +908,21 @@ printf("----------------------------------------------------------------\n");
 	}
 
 	if (alu_sched && sfu_sched) {
-		int si = 0, ai = 0;       /* instruction index */
-
-/* This isn't quite right.. I see sequences like (aaa-2b.fs.txt, for example):
- *    upload, offset 0x801 (ALU-SCHED), 8 words
- *      0x00000002 \     larger gap here, what would make sense is SFU first,
- *      0x0000000a |-->  followed by multiple ALU instruction groups..
- *      0x00000011 /
- *      0x00000000
- *      0x00000015
- *      0x00000000
- *      0x00000019
- *      0x00000000
- *    upload, offset 0x601 (SFU-SCHED), 8 words
- *      0x00000001
- *      0x00000000
- *      0x00000005
- *      0x00000009
- *      0x00000000
- *      0x0000000d
- *      0x00000000
- *      0x00000011
- */
-		assert(alu_sched_length == sfu_sched_length);  /* I think! */
-		assert(alu_sched_length == tex_length);  /* I think! */
+		assert(alu_sched_length == sfu_sched_length);
+		assert(alu_sched_length == tex_length);
 
 		for (i = 0; i < alu_sched_length; i++) {
-			if (sfu_sched[i])
-				print_sfu(si++, sfu_sched[i]);
+			int sfu_offset = sfu_sched[i] >> 2, sfu_count = sfu_sched[i] & 3;
+			int alu_offset = alu_sched[i] >> 2, alu_count = alu_sched[i] & 3;
+			int j;
+
+			for (j = 0; j < sfu_count; ++j)
+				print_sfu(sfu_offset + j, i + 1);
 
 			print_tex(i, i + 1);
 
-			if (alu_sched[i])
-				print_alu(ai++, alu_sched[i]);
+			for (j = 0; j < alu_count; ++j)
+				print_alu(alu_offset + j, i + 1);
 		}
 	}
 }
