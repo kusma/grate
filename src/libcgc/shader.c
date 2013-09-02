@@ -689,7 +689,7 @@ static void fragment_sfu_disasm(uint32_t *words)
 
 	inst = instruction_create_from_words(words, 2);
 
-	if (words[0] != 0x104e51ba) { /* seems like our NOP */
+	if (! words[1]) { /* use heuristic for now until we know .. */
 		op = instruction_extract(inst, 54, 57);
 		switch (op) {
 		case 0x1:
@@ -731,10 +731,7 @@ static void fragment_sfu_disasm(uint32_t *words)
 
 		reg = instruction_extract(inst, 58, 62);
 		pr(" r%d", reg);
-	} else
-		reg = instruction_extract(inst, 32, 63); /* mark bits as known */
-
-	if (words[1]) {
+	} else {
 		var = instruction_extract(inst, 24, 28);
 
 		pr("var v%d", var);
