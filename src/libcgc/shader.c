@@ -784,6 +784,36 @@ static void fragment_tex_disasm(uint32_t *words)
 	instruction_free(inst);
 }
 
+static void fragment_exp_disasm(uint32_t *words)
+{
+	int op;
+	struct instruction *inst;
+	char buf[512] = { 0 }, *str = buf;
+
+	inst = instruction_create_from_words(words, 1);
+
+	op = instruction_get_bit(inst, 17);
+	if (op) {
+		pr("export ");
+		if (instruction_get_bit(inst, 4))
+			pr("tex");
+		else
+			pr("alu");
+	} else
+		pr("nop");
+
+	printf("     ");
+
+	printf("         ");
+	instruction_print_raw(inst);
+	printf("         ");
+	instruction_print_unknown(inst);
+
+	printf("    %s\n", buf);
+
+	instruction_free(inst);
+}
+
 static const char * offset_name(uint32_t offset)
 {
 	switch (offset) {
@@ -829,6 +859,13 @@ static void fragment_shader_disassemble(uint32_t *words, size_t length)
 			if (t) printf("%03d", t);
 			embedded_constant_used |= fragment_alu_disasm(alu + (idx * 8) + k * 2);
 		}
+	}
+
+	void print_exp(int idx, int t)
+	{
+		printf("EXP:");
+		if (t) printf("%03d", t);
+		fragment_exp_disasm(export + idx);
 	}
 
 	for (i = 0; i < length; ) {
@@ -938,10 +975,7 @@ printf("----------------------------------------------------------------\n");
 			for (j = 0; j < alu_count; ++j)
 				print_alu(alu_offset + j, i + 1);
 
-			if (export[i] & 0x00020000)
-				printf("export %s\n", export[i] & 0x10 ? "tex" : "alu");
-
-			printf("---\n");
+			print_exp(i, i + 1);
 		}
 	}
 }
