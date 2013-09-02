@@ -788,6 +788,7 @@ static const char * offset_name(uint32_t offset)
 	case 0x701: return "TEX";
 	case 0x801: return "ALU-SCHED";
 	case 0x804: return "ALU";
+	case 0x901: return "EXPORT";
 	default:    return "???";
 	}
 }
@@ -795,8 +796,8 @@ static const char * offset_name(uint32_t offset)
 static void fragment_shader_disassemble(uint32_t *words, size_t length)
 {
 	int i, j;
-	uint32_t *sfu = NULL, *alu = NULL, *tex;
-	int sfu_length = 0, alu_length = 0, tex_length = 0;
+	uint32_t *sfu = NULL, *alu = NULL, *tex = NULL, *export = NULL;
+	int sfu_length = 0, alu_length = 0, tex_length = 0, export_length = 0;
 	uint32_t *sfu_sched = NULL, *alu_sched = NULL;
 	int sfu_sched_length = 0, alu_sched_length = 0;
 
@@ -898,7 +899,14 @@ printf("----------------------------------------------------------------\n");
 				print_alu(j, 0);
 				printf("\n");
 			}
+			break;
 
+		case 0x901:
+			export = words + i;
+			export_length = count;
+			printf("      exports:\n");
+			for (j = 0; j < export_length; ++j)
+				printf("      0x%08x\n", export[j]);
 			break;
 		default:
 			for (j = 0; j < count; ++j)
@@ -910,6 +918,7 @@ printf("----------------------------------------------------------------\n");
 	if (alu_sched && sfu_sched) {
 		assert(alu_sched_length == sfu_sched_length);
 		assert(alu_sched_length == tex_length);
+		assert(alu_sched_length == export_length);
 
 		for (i = 0; i < alu_sched_length; i++) {
 			int sfu_offset = sfu_sched[i] >> 2, sfu_count = sfu_sched[i] & 3;
@@ -923,6 +932,11 @@ printf("----------------------------------------------------------------\n");
 
 			for (j = 0; j < alu_count; ++j)
 				print_alu(alu_offset + j, i + 1);
+
+			if (export[i] & 0x00020000)
+				printf("export %s\n", export[i] & 0x10 ? "tex" : "alu");
+
+			printf("---\n");
 		}
 	}
 }
