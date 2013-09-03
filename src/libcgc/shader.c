@@ -965,20 +965,27 @@ printf("----------------------------------------------------------------\n");
 		assert(alu_sched_length == tex_length);
 		assert(alu_sched_length == export_length);
 
-		for (i = 0; i < alu_sched_length; i++) {
-			int sfu_offset = sfu_sched[i] >> 2, sfu_count = sfu_sched[i] & 3;
-			int alu_offset = alu_sched[i] >> 2, alu_count = alu_sched[i] & 3;
-			int j;
+		for (i = 0; i < alu_sched_length + 1; i++) {
+			if (i < alu_sched_length) {
+				int sfu_offset = sfu_sched[i] >> 2,
+				    sfu_count = sfu_sched[i] & 3;
 
-			for (j = 0; j < sfu_count; ++j)
-				print_sfu(sfu_offset + j, i + 1);
+				for (j = 0; j < sfu_count; ++j)
+					print_sfu(sfu_offset + j, i + 1);
+			}
 
-			print_tex(i, i + 1);
+			if (i > 0) {
+				int alu_offset = alu_sched[i - 1] >> 2,
+				    alu_count = alu_sched[i -1] & 3;
 
-			for (j = 0; j < alu_count; ++j)
-				print_alu(alu_offset + j, i + 1);
+				for (j = 0; j < alu_count; ++j)
+					print_alu(alu_offset + j, i + 1);
 
-			print_exp(i, i + 1);
+				print_exp(i - 1, i + 1);
+			}
+
+			if (i < alu_sched_length)
+				print_tex(i, i + 1);
 		}
 	}
 }
