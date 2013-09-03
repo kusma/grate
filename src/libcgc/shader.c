@@ -906,6 +906,7 @@ printf("----------------------------------------------------------------\n");
 			for (j = 0; j < count; ++j)
 				printf("      0x%08x\n", words[i + j]);
 			break;
+
 		case 0x604:
 			sfu = words + i;
 			sfu_length = count / 2;
@@ -913,8 +914,8 @@ printf("----------------------------------------------------------------\n");
 			printf("      sfu instructions:\n");
 			for (j = 0; j < sfu_length; j++)
 				print_sfu(j, 0);
-
 			break;
+
 		case 0x701:
 			tex = words + i;
 			tex_length = count;
@@ -923,12 +924,14 @@ printf("----------------------------------------------------------------\n");
 			for (j = 0; j < tex_length; ++j)
 				print_tex(j, 0);
 			break;
+
 		case 0x801:
 			alu_sched = words + i;
 			alu_sched_length = count;
 			for (j = 0; j < count; ++j)
 				printf("      0x%08x\n", words[i + j]);
 			break;
+
 		case 0x804:
 			alu = words + i;
 			alu_length = count / 8;
@@ -943,10 +946,10 @@ printf("----------------------------------------------------------------\n");
 		case 0x901:
 			export = words + i;
 			export_length = count;
-			printf("      exports:\n");
 			for (j = 0; j < export_length; ++j)
 				printf("      0x%08x\n", export[j]);
 			break;
+
 		default:
 			for (j = 0; j < count; ++j)
 				printf("      0x%08x\n", words[i + j]);
