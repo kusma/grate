@@ -815,6 +815,7 @@ static const char * offset_name(uint32_t offset)
 {
 	switch (offset) {
 	case 0x206: return "VTX";
+	case 0x541: return "IMPORT";
 	case 0x601: return "SFU-SCHED";
 	case 0x604: return "SFU";
 	case 0x701: return "TEX";
