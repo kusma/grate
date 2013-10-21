@@ -687,7 +687,7 @@ out:
 	return embedded_constant_used;
 }
 
-static void fragment_sfu_disasm(uint32_t *words)
+static void fragment_mfu_disasm(uint32_t *words)
 {
 	int op, reg, var;
 	struct instruction *inst;
@@ -817,8 +817,8 @@ static const char * offset_name(uint32_t offset)
 	switch (offset) {
 	case 0x206: return "VTX";
 	case 0x541: return "IMPORT";
-	case 0x601: return "SFU-SCHED";
-	case 0x604: return "SFU";
+	case 0x601: return "MFU-SCHED";
+	case 0x604: return "MFU";
 	case 0x701: return "TEX";
 	case 0x801: return "ALU-SCHED";
 	case 0x804: return "ALU";
@@ -830,16 +830,16 @@ static const char * offset_name(uint32_t offset)
 static void fragment_shader_disassemble(uint32_t *words, size_t length)
 {
 	int i, j;
-	uint32_t *sfu = NULL, *alu = NULL, *tex = NULL, *export = NULL;
-	int sfu_length = 0, alu_length = 0, tex_length = 0, export_length = 0;
-	uint32_t *sfu_sched = NULL, *alu_sched = NULL;
-	int sfu_sched_length = 0, alu_sched_length = 0;
+	uint32_t *mfu = NULL, *alu = NULL, *tex = NULL, *export = NULL;
+	int mfu_length = 0, alu_length = 0, tex_length = 0, export_length = 0;
+	uint32_t *mfu_sched = NULL, *alu_sched = NULL;
+	int mfu_sched_length = 0, alu_sched_length = 0;
 
-	void print_sfu(int idx, int t)
+	void print_mfu(int idx, int t)
 	{
-		printf("SFU:");
+		printf("MFU:");
 		if (t) printf("%03d", t);
-		fragment_sfu_disasm(sfu + (idx * 2));
+		fragment_mfu_disasm(mfu + (idx * 2));
 	}
 
 	void print_tex(int idx, int  t)
@@ -903,19 +903,19 @@ printf("----------------------------------------------------------------\n");
 		printf("    upload, offset 0x%03x (%s), %d words\n", offset, offset_name(offset), count);
 		switch (offset) {
 		case 0x601:
-			sfu_sched = words + i;
-			sfu_sched_length = count;
+			mfu_sched = words + i;
+			mfu_sched_length = count;
 			for (j = 0; j < count; ++j)
 				printf("      0x%08x\n", words[i + j]);
 			break;
 
 		case 0x604:
-			sfu = words + i;
-			sfu_length = count / 2;
+			mfu = words + i;
+			mfu_length = count / 2;
 
-			printf("      sfu instructions:\n");
-			for (j = 0; j < sfu_length; j++)
-				print_sfu(j, 0);
+			printf("      mfu instructions:\n");
+			for (j = 0; j < mfu_length; j++)
+				print_mfu(j, 0);
 			break;
 
 		case 0x701:
@@ -959,18 +959,18 @@ printf("----------------------------------------------------------------\n");
 		i += count;
 	}
 
-	if (alu_sched && sfu_sched) {
-		assert(alu_sched_length == sfu_sched_length);
+	if (alu_sched && mfu_sched) {
+		assert(alu_sched_length == mfu_sched_length);
 		assert(alu_sched_length == tex_length);
 		assert(alu_sched_length == export_length);
 
 		for (i = 0; i < alu_sched_length + 1; i++) {
 			if (i < alu_sched_length) {
-				int sfu_offset = sfu_sched[i] >> 2,
-				    sfu_count = sfu_sched[i] & 3;
+				int mfu_offset = mfu_sched[i] >> 2,
+				    mfu_count = mfu_sched[i] & 3;
 
-				for (j = 0; j < sfu_count; ++j)
-					print_sfu(sfu_offset + j, i + 1);
+				for (j = 0; j < mfu_count; ++j)
+					print_mfu(mfu_offset + j, i + 1);
 			}
 
 			if (i > 0) {
