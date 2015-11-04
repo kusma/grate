@@ -8,6 +8,8 @@ libgrate_la_CFLAGS = \
 
 libgrate_la_SOURCES = \
 	display.c \
+	fs_ir.h \
+	fs_ir.c \
 	grate.c \
 	grate.h \
 	libgrate-private.h \
