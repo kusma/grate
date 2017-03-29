@@ -22,6 +22,7 @@ noinst_PROGRAMS = \
 	gles-pbuffer-clear \
 	gles-pbuffer-cube \
 	gles-pbuffer-fill \
+	gles-pbuffer-long-shader \
 	gles-pbuffer-triangle \
 	gles-pbuffer-triangle-rotate \
 	gles-pbuffer-uniforms \
