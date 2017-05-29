@@ -338,7 +338,7 @@ int main(int argc, char *argv[])
 
 	while (true) {
 		struct mat4 modelview, projection, transform, result, rotate;
-		struct mat4 cube_mvp, grate_mvp;
+		struct mat4 cube_mvp, cube_mvp_transpose, grate_mvp;
 
 		grate_clear(grate);
 
@@ -363,11 +363,12 @@ int main(int argc, char *argv[])
 		mat4_translate(&transform, 0.0f, 0.8f, -4.0f);
 		mat4_multiply(&modelview, &transform, &rotate);
 		mat4_multiply(&cube_mvp, &projection, &modelview);
+		mat4_transpose(&cube_mvp_transpose, &cube_mvp);
 
 		/* Draw cube */
 		grate_3d_ctx_bind_program(ctx, cube_program);
 		grate_3d_ctx_set_vertex_mat4_uniform(ctx, cube_mvp_loc,
-						     &cube_mvp);
+						     &cube_mvp_transpose);
 		grate_3d_ctx_vertex_attrib_float_pointer(ctx, cube_vertices_loc,
 							 4, cube_vertices_bo);
 		grate_3d_ctx_vertex_attrib_float_pointer(ctx, cube_texcoord_loc,
@@ -389,9 +390,10 @@ int main(int argc, char *argv[])
 		mat4_translate(&transform, 0.0f, 0.8f, -4.0f);
 		mat4_multiply(&modelview, &transform, &result);
 		mat4_multiply(&cube_mvp, &projection, &modelview);
+		mat4_transpose(&cube_mvp_transpose, &cube_mvp);
 
 		grate_3d_ctx_set_vertex_mat4_uniform(ctx, cube_mvp_loc,
-						     &cube_mvp);
+						     &cube_mvp_transpose);
 		grate_3d_draw_elements(ctx, TGR3D_PRIMITIVE_TYPE_TRIANGLES,
 				       cube_bo, TGR3D_INDEX_MODE_UINT16,
 				       ARRAY_SIZE(cube_indices));
@@ -405,9 +407,10 @@ int main(int argc, char *argv[])
 		mat4_translate(&transform, 0.0f, 0.8f, -4.0f);
 		mat4_multiply(&modelview, &transform, &result);
 		mat4_multiply(&cube_mvp, &projection, &modelview);
+		mat4_transpose(&cube_mvp_transpose, &cube_mvp);
 
 		grate_3d_ctx_set_vertex_mat4_uniform(ctx, cube_mvp_loc,
-						     &cube_mvp);
+						     &cube_mvp_transpose);
 		grate_3d_draw_elements(ctx, TGR3D_PRIMITIVE_TYPE_TRIANGLES,
 				       cube_bo, TGR3D_INDEX_MODE_UINT16,
 				       ARRAY_SIZE(cube_indices));

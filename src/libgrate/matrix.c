@@ -50,6 +50,14 @@ void mat4_multiply(struct mat4 *result, const struct mat4 *a,
 	result->ww = a->wx * b->xw + a->wy * b->yw + a->wz * b->zw + a->ww * b->ww;
 }
 
+void mat4_transpose(struct mat4 *result, const struct mat4 *m)
+{
+	result->xx = m->xx; result->xy = m->yx; result->xz = m->zx; result->xw = m->wx;
+	result->yx = m->xy; result->yy = m->yy; result->yz = m->zy; result->yw = m->wy;
+	result->zx = m->xz; result->zy = m->yz; result->zz = m->zz; result->zw = m->wz;
+	result->wx = m->xw; result->wy = m->yw; result->wz = m->zw; result->ww = m->ww;
+}
+
 void mat4_zero(struct mat4 *m)
 {
 	m->xx = m->xy = m->xz = m->xw = 0.0f;
