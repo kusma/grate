@@ -381,68 +381,8 @@ int main(int argc, char *argv[])
 				       ARRAY_SIZE(cube_indices));
 		grate_flush(grate);
 
-		/* Draw couple more cubes */
-		mat4_identity(&modelview);
-		mat4_multiply(&result, &modelview, &rotate);
-		mat4_translate(&transform, -2.5f, 0.0f, 0.0f);
-		mat4_multiply(&modelview, &transform, &result);
-		mat4_multiply(&result, &rotate, &modelview);
-		mat4_translate(&transform, 0.0f, 0.8f, -4.0f);
-		mat4_multiply(&modelview, &transform, &result);
-		mat4_multiply(&cube_mvp, &projection, &modelview);
-		mat4_transpose(&cube_mvp_transpose, &cube_mvp);
-
-		grate_3d_ctx_set_vertex_mat4_uniform(ctx, cube_mvp_loc,
-						     &cube_mvp_transpose);
-		grate_3d_draw_elements(ctx, TGR3D_PRIMITIVE_TYPE_TRIANGLES,
-				       cube_bo, TGR3D_INDEX_MODE_UINT16,
-				       ARRAY_SIZE(cube_indices));
-		grate_flush(grate);
-
-		mat4_identity(&modelview);
-		mat4_multiply(&result, &modelview, &rotate);
-		mat4_translate(&transform, 2.5f, 0.0f, 0.0f);
-		mat4_multiply(&modelview, &transform, &result);
-		mat4_multiply(&result, &rotate, &modelview);
-		mat4_translate(&transform, 0.0f, 0.8f, -4.0f);
-		mat4_multiply(&modelview, &transform, &result);
-		mat4_multiply(&cube_mvp, &projection, &modelview);
-		mat4_transpose(&cube_mvp_transpose, &cube_mvp);
-
-		grate_3d_ctx_set_vertex_mat4_uniform(ctx, cube_mvp_loc,
-						     &cube_mvp_transpose);
-		grate_3d_draw_elements(ctx, TGR3D_PRIMITIVE_TYPE_TRIANGLES,
-				       cube_bo, TGR3D_INDEX_MODE_UINT16,
-				       ARRAY_SIZE(cube_indices));
-		grate_flush(grate);
-
 		grate_3d_ctx_disable_vertex_attrib_array(ctx, cube_vertices_loc);
 		grate_3d_ctx_disable_vertex_attrib_array(ctx, cube_texcoord_loc);
-
-		/* Grate MVP */
-		mat4_identity(&grate_mvp);
-
-		/* Draw grate */
-		grate_3d_ctx_bind_program(ctx, grate_program);
-		grate_3d_ctx_set_vertex_mat4_uniform(ctx, grate_mvp_loc,
-						     &grate_mvp);
-		grate_3d_ctx_vertex_attrib_float_pointer(ctx, grate_vertices_loc,
-							 4, grate_vertices_bo);
-		grate_3d_ctx_vertex_attrib_float_pointer(ctx, grate_texcoord_loc,
-							 2, grate_texcoord_bo);
-		grate_3d_ctx_enable_vertex_attrib_array(ctx, grate_vertices_loc);
-		grate_3d_ctx_enable_vertex_attrib_array(ctx, grate_texcoord_loc);
-
-		/* Bypass depth test to always draw on top of cubes */
-		grate_3d_ctx_set_depth_func(ctx, GRATE_3D_CTX_DEPTH_FUNC_ALWAYS);
-
-		grate_3d_draw_elements(ctx, TGR3D_PRIMITIVE_TYPE_TRIANGLES,
-				       grate_bo, TGR3D_INDEX_MODE_UINT16,
-				       ARRAY_SIZE(grate_indices));
-		grate_flush(grate);
-
-		grate_3d_ctx_disable_vertex_attrib_array(ctx, grate_vertices_loc);
-		grate_3d_ctx_disable_vertex_attrib_array(ctx, grate_texcoord_loc);
 
 		grate_swap_buffers(grate);
 

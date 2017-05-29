@@ -25,5 +25,5 @@ EXEC                   MADv r0.xyzw, a[0].yyyy, c[1].xyzw, r0.xyzw;
 EXEC                   MADv r0.xyzw, a[0].zzzz, c[2].xyzw, r0.xyzw;
 EXEC(export[0]=vector) MADv r63.xyzw, a[0].wwww, c[3].xyzw, r0.xyzw;
 
-/* texcoord export */
-EXEC(export[7]=vector) MOVv r63.xy**, a[1].xyzw;
+/* color export */
+EXEC(export[7]=vector) MOVv r63.xyzw, a[1].xyzw;

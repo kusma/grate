@@ -2,4 +2,4 @@
  * Shader linker for /grate/tests/cube-textured2
  */
 
-LINK fp20, fp20, NOP, NOP, tram0.xyzw, export1
+LINK fp20, fp20, fp20, fp20, tram0.xyzw, export1
