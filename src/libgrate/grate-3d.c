@@ -45,8 +45,10 @@ static void grate_shader_emit(struct host1x_pushbuf *pb,
 {
 	unsigned i;
 
-	for (i = 0; i < shader->num_words; i++)
+	for (i = 0; i < shader->num_words; i++) {
+		printf("\t\t0x%08x,\n", shader->words[i]);
 		host1x_pushbuf_push(pb, shader->words[i]);
+	}
 }
 
 static void grate_3d_begin(struct host1x_pushbuf *pb)
@@ -162,6 +164,8 @@ static void grate_3d_set_cull_face_and_linker_inst_nb(struct host1x_pushbuf *pb,
 
 	host1x_pushbuf_push(pb,
 			HOST1X_OPCODE_INCR(TGR3D_CULL_FACE_LINKER_SETUP, 1));
+
+	printf("\tuint32_t cull_face_linker_setup = 0x%08x;\n", value);
 
 	host1x_pushbuf_push(pb, value);
 }
@@ -320,9 +324,13 @@ static void grate_3d_set_alu_buffer_size(struct host1x_pushbuf *pb,
 
 	host1x_pushbuf_push(pb, HOST1X_OPCODE_INCR(TGR3D_ALU_BUFFER_SIZE, 1));
 	host1x_pushbuf_push(pb, value);
+	printf("\tuint32_t alu_buffer_size = 0x%08x;\n", value);
 
+	value  = (0x32 << 16) | 0xf;
+	value |= unk_pseq_cfg << 4;
 	host1x_pushbuf_push(pb, HOST1X_OPCODE_INCR(0x501, 1));
-	host1x_pushbuf_push(pb, (0x0032 << 16) | (unk_pseq_cfg << 4) | 0xF);
+	host1x_pushbuf_push(pb, value);
+	printf("\tuint32_t value_501 = 0x%08x;\n", value);
 }
 
 static void grate_3d_set_pseq_dw_cfg(struct host1x_pushbuf *pb,
@@ -330,6 +338,8 @@ static void grate_3d_set_pseq_dw_cfg(struct host1x_pushbuf *pb,
 {
 	uint32_t value = TGR3D_VAL(FP_PSEQ_DW_CFG, PSEQ_TO_DW_EXEC_NB,
 				   ctx->program->fs->pseq_to_dw_nb);
+
+	printf("\tuint32_t pseq_dw_cfg = 0x%08x;\n", value);
 
 	host1x_pushbuf_push(pb, HOST1X_OPCODE_INCR(TGR3D_FP_PSEQ_DW_CFG, 1));
 	host1x_pushbuf_push(pb, value);
@@ -345,6 +355,7 @@ static void grate_3d_set_used_tram_rows_nb(struct host1x_pushbuf *pb,
 	value |= TGR3D_VAL(TRAM_SETUP, DIV64,
 			   64 / ctx->program->linker->used_tram_rows_nb);
 
+	printf("\tuint32_t tram_setup = 0x%08x;\n", value);
 	host1x_pushbuf_push(pb, HOST1X_OPCODE_INCR(TGR3D_TRAM_SETUP, 1));
 	host1x_pushbuf_push(pb, value);
 }
@@ -440,9 +451,12 @@ static void grate_3d_reset_program(struct host1x_pushbuf *pb)
 static void grate_3d_startup_pseq_engine(struct host1x_pushbuf *pb,
 					 struct grate_3d_ctx *ctx)
 {
+	uint32_t value = 0x20006000 | ctx->program->fs->pseq_inst_nb;
 	host1x_pushbuf_push(pb,
 			    HOST1X_OPCODE_INCR(TGR3D_FP_PSEQ_ENGINE_INST, 1));
-	host1x_pushbuf_push(pb, 0x20006000 | ctx->program->fs->pseq_inst_nb);
+	host1x_pushbuf_push(pb, value);
+
+	printf("\tuint32_t pseq_engine_inst = 0x%08x;\n", value);
 }
 
 static void grate_3d_set_late_test(struct host1x_pushbuf *pb,
@@ -782,37 +796,46 @@ static void grate_3d_setup_context(struct host1x_pushbuf *pb,
 {
 	grate_3d_begin(pb);
 
-	grate_3d_set_dither(pb, ctx);
+/*	grate_3d_set_dither(pb, ctx); */
 	grate_3d_set_scissor(pb, ctx);
-	grate_3d_set_guardband(pb, ctx);
-	grate_3d_set_late_test(pb, ctx);
+/*	grate_3d_set_guardband(pb, ctx); */
+/*	grate_3d_set_late_test(pb, ctx);
 	grate_3d_set_point_size(pb, ctx);
 	grate_3d_set_line_width(pb, ctx);
-	grate_3d_set_line_params(pb, ctx);
+	grate_3d_set_line_params(pb, ctx); */
 	grate_3d_set_pseq_dw_cfg(pb, ctx);
-	grate_3d_set_depth_range(pb, ctx);
+/*	grate_3d_set_depth_range(pb, ctx);
 	grate_3d_set_point_params(pb, ctx);
 	grate_3d_set_depth_buffer(pb, ctx);
 	grate_3d_set_stencil_test(pb, ctx);
-	grate_3d_set_polygon_offset(pb, ctx);
+	grate_3d_set_polygon_offset(pb, ctx); */
 	grate_3d_set_alu_buffer_size(pb, ctx);
 	grate_3d_startup_pseq_engine(pb, ctx);
-	grate_3d_set_point_coord_range(pb, ctx);
+/*	grate_3d_set_point_coord_range(pb, ctx); */
 	grate_3d_set_used_tram_rows_nb(pb, ctx);
 	grate_3d_set_viewport_bias_scale(pb, ctx);
 	grate_3d_set_cull_face_and_linker_inst_nb(pb, ctx);
 
 	grate_3d_upload_vp_constants(pb, ctx);
-	grate_3d_upload_fp_constants(pb, ctx);
+/*	grate_3d_upload_fp_constants(pb, ctx); */
 
 	grate_3d_setup_attributes(pb, ctx);
 	grate_3d_setup_render_targets(pb, ctx);
-	grate_3d_setup_textures(pb, ctx);
+/*	grate_3d_setup_textures(pb, ctx); */
 
 	grate_3d_reset_program(pb);
+
+	printf("\tuint32_t vs[] = {\n");
 	grate_shader_emit(pb, ctx->program->vs);
+	printf("\t};\n");
+
+	printf("\tuint32_t fs[] = {\n");
 	grate_shader_emit(pb, ctx->program->fs);
+	printf("\t};\n");
+
+	printf("\tuint32_t linker[] = {\n");
 	grate_shader_emit(pb, ctx->program->linker);
+	printf("\t};\n");
 }
 
 static void grate_3d_check_render_targets_guard(struct grate_3d_ctx *ctx)
