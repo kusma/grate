@@ -425,11 +425,8 @@ static void grate_3d_draw_primitives(struct host1x_pushbuf *pb,
 	host1x_pushbuf_push(pb, value);
 }
 
-static void grate_3d_init(struct host1x_pushbuf *pb)
+static void grate_3d_reset_program(struct host1x_pushbuf *pb)
 {
-	/* reset upload counters ? */
-	host1x_pushbuf_push(pb, HOST1X_OPCODE_IMM(0x503, 0x00));
-	host1x_pushbuf_push(pb, HOST1X_OPCODE_IMM(0x545, 0x00));
 	host1x_pushbuf_push(pb,
 			    HOST1X_OPCODE_IMM(TGR3D_VP_UPLOAD_INST_ID, 0));
 	host1x_pushbuf_push(pb,
@@ -438,19 +435,6 @@ static void grate_3d_init(struct host1x_pushbuf *pb)
 			    HOST1X_OPCODE_IMM(TGR3D_FP_UPLOAD_MFU_INST_ID, 0));
 	host1x_pushbuf_push(pb,
 			    HOST1X_OPCODE_IMM(TGR3D_FP_UPLOAD_ALU_INST_ID, 0));
-
-	host1x_pushbuf_push(pb, HOST1X_OPCODE_IMM(0x740, 0x035));
-	host1x_pushbuf_push(pb, HOST1X_OPCODE_IMM(0xe27, 0x01));
-	host1x_pushbuf_push(pb, HOST1X_OPCODE_INCR(0xa02, 0x06));
-	host1x_pushbuf_push(pb, 0x000001ff);
-	host1x_pushbuf_push(pb, 0x000001ff);
-	host1x_pushbuf_push(pb, 0x000001ff);
-	host1x_pushbuf_push(pb, 0x00000030);
-	host1x_pushbuf_push(pb, 0x00000020);
-	host1x_pushbuf_push(pb, 0x00000030);
-	host1x_pushbuf_push(pb, HOST1X_OPCODE_IMM(0xa00, 0xe01));
-	host1x_pushbuf_push(pb, HOST1X_OPCODE_IMM(0xa08, 0x100));
-	host1x_pushbuf_push(pb, HOST1X_OPCODE_IMM(0x40c, 0x06));
 }
 
 static void grate_3d_startup_pseq_engine(struct host1x_pushbuf *pb,
@@ -797,7 +781,6 @@ static void grate_3d_setup_context(struct host1x_pushbuf *pb,
 				   struct grate_3d_ctx *ctx)
 {
 	grate_3d_begin(pb);
-	grate_3d_init(pb);
 
 	grate_3d_set_dither(pb, ctx);
 	grate_3d_set_scissor(pb, ctx);
@@ -826,6 +809,7 @@ static void grate_3d_setup_context(struct host1x_pushbuf *pb,
 	grate_3d_setup_render_targets(pb, ctx);
 	grate_3d_setup_textures(pb, ctx);
 
+	grate_3d_reset_program(pb);
 	grate_shader_emit(pb, ctx->program->vs);
 	grate_shader_emit(pb, ctx->program->fs);
 	grate_shader_emit(pb, ctx->program->linker);
