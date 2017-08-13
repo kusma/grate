@@ -221,7 +221,9 @@ static void window_show(struct window *window)
 	XFlush(window->display->x11);
 }
 
-static void draw(struct window *window)
+static GLuint vertex, fragment, program;
+
+static void init()
 {
 	static const char *vertex_source =
 		"attribute vec4 position;\n"
@@ -244,20 +246,6 @@ static void draw(struct window *window)
 		"  gl_FragColor = vcolor;\n"
 		"}\n";
 
-	static GLfloat vertices[] = {
-		 0.0f,  0.5f, 0.0f,
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-	};
-
-	static GLfloat colors[] = {
-		1.0f, 0.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, 0.0f, 1.0f,
-		0.0f, 0.0f, 1.0f, 1.0f,
-	};
-
-	GLuint vertex, fragment, program;
-
 	vertex = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex, 1, &vertex_source, NULL);
 	glCompileShader(vertex);
@@ -276,6 +264,24 @@ static void draw(struct window *window)
 	printf("=== Calling glLinkProgram()\n");
 	glLinkProgram(program);
 	glFlush();
+
+}
+
+static void draw(struct window *window)
+{
+	static GLfloat vertices[] = {
+		 0.0f,  0.5f, 0.0f,
+		-0.5f, -0.5f, 0.0f,
+		 0.5f, -0.5f, 0.0f,
+	};
+
+	static GLfloat colors[] = {
+		1.0f, 0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f, 1.0f,
+	};
+
+
 	printf("=== Calling glUseProgram()\n");
 	glUseProgram(program);
 	glFlush();
@@ -364,6 +370,7 @@ int main(int argc, char *argv[])
 
 	window_show(window);
 
+	init();
 	event_loop(window);
 
 	window_close(window);
