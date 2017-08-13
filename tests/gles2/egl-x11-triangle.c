@@ -223,7 +223,7 @@ static void window_show(struct window *window)
 
 static GLuint vertex, fragment, program;
 
-static void init()
+static void init(struct window *window)
 {
 	static const char *vertex_source =
 		"attribute vec4 position;\n"
@@ -265,6 +265,9 @@ static void init()
 	glLinkProgram(program);
 	glFlush();
 
+	printf("=== calling glViewport()\n");
+	glViewport(0, 0, window->width, window->height);
+	glFlush();
 }
 
 static void draw(struct window *window)
@@ -284,9 +287,6 @@ static void draw(struct window *window)
 
 	printf("=== Calling glUseProgram()\n");
 	glUseProgram(program);
-	glFlush();
-	printf("=== calling glViewport()\n");
-	glViewport(0, 0, window->width, window->height);
 	glFlush();
 	printf("=== calling glClearColor()\n");
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -370,7 +370,7 @@ int main(int argc, char *argv[])
 
 	window_show(window);
 
-	init();
+	init(window);
 	event_loop(window);
 
 	window_close(window);
