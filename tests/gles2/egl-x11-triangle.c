@@ -22,6 +22,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -231,9 +232,11 @@ static void init(struct window *window)
 		"\n"
 		"varying vec4 vcolor;\n"
 		"\n"
+		"uniform float offset;\n"
+		"\n"
 		"void main()\n"
 		"{\n"
-		"  gl_Position = position;\n"
+		"  gl_Position = vec4(position.x + offset, position.yzw);\n"
 		"  vcolor = color;\n"
 		"}\n";
 
@@ -272,6 +275,10 @@ static void init(struct window *window)
 
 static void draw(struct window *window)
 {
+	static float th = 0.0f;
+	float offset = cos(th);
+	th += M_PI / 30;
+
 	static GLfloat vertices[] = {
 		 0.0f,  0.5f, 0.0f,
 		-0.5f, -0.5f, 0.0f,
@@ -306,6 +313,10 @@ static void draw(struct window *window)
 	glFlush();
 	printf("=== Calling glEnableVertexAttribArray(1)\n");
 	glEnableVertexAttribArray(1);
+	glFlush();
+	int location = glGetUniformLocation(program, "offset");
+	printf("=== Calling glVertexAttrib1f(%d, offset)\n", location);
+	glUniform1f(location, offset);
 	glFlush();
 	printf("=== Calling glDrawArrays(GL_TRIANGLES, 0, 3)\n");
 	glDrawArrays(GL_TRIANGLES, 0, 3);
