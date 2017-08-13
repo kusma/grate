@@ -320,28 +320,34 @@ static void event_loop(struct window *window)
 {
 	while (1) {
 		bool redraw = false;
-		char buffer[16];
-		XEvent event;
 
-		XNextEvent(window->display->x11, &event);
-
-		switch (event.type) {
-		case Expose:
+		if (!XPending(window->display->x11))
 			redraw = true;
-			break;
+		else
+		{
+			char buffer[16];
 
-		case ConfigureNotify:
-			glViewport(0, 0, (GLint)event.xconfigure.width, (GLint)event.xconfigure.height);
-			break;
+			XEvent event;
+			XNextEvent(window->display->x11, &event);
 
-		case KeyPress:
-			XLookupString(&event.xkey, buffer, sizeof(buffer), NULL, NULL);
-			if (buffer[0] == 27)
-				return;
-			break;
+			switch (event.type) {
+			case Expose:
+				redraw = true;
+				break;
 
-		default:
-			break;
+			case ConfigureNotify:
+				glViewport(0, 0, (GLint)event.xconfigure.width, (GLint)event.xconfigure.height);
+				break;
+
+			case KeyPress:
+				XLookupString(&event.xkey, buffer, sizeof(buffer), NULL, NULL);
+				if (buffer[0] == 27)
+					return;
+				break;
+
+			default:
+				break;
+			}
 		}
 
 		if (redraw)
