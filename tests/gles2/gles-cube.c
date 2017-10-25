@@ -148,21 +148,24 @@ static void window_draw(struct window *window)
 
 	struct mat4 matrix, modelview, projection, transform, result;
 	static GLfloat x = 0.0f, y = 0.0f, z = 0.0f;
-	GLint position, color, mvp;
-	GLuint vs, fs, program;
 	GLfloat aspect;
+	static GLint program = -1;
+	static GLint position, color, mvp;
+	if (program < 0) {
+		GLuint vs, fs;
 
-	vs = glsl_shader_load(GL_VERTEX_SHADER, vertex_shader,
-			      ARRAY_SIZE(vertex_shader));
-	fs = glsl_shader_load(GL_FRAGMENT_SHADER, fragment_shader,
-			      ARRAY_SIZE(fragment_shader));
-	program = glsl_program_create(vs, fs);
-	glsl_program_link(program);
+		vs = glsl_shader_load(GL_VERTEX_SHADER, vertex_shader,
+				      ARRAY_SIZE(vertex_shader));
+		fs = glsl_shader_load(GL_FRAGMENT_SHADER, fragment_shader,
+				      ARRAY_SIZE(fragment_shader));
+		program = glsl_program_create(vs, fs);
+		glsl_program_link(program);
+
+		position = glGetAttribLocation(program, "position");
+		color = glGetAttribLocation(program, "color");
+		mvp = glGetUniformLocation(program, "mvp");
+	}
 	glUseProgram(program);
-
-	position = glGetAttribLocation(program, "position");
-	color = glGetAttribLocation(program, "color");
-	mvp = glGetUniformLocation(program, "mvp");
 
 	aspect = window->width / (GLfloat)window->height;
 
