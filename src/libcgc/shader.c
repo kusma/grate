@@ -568,8 +568,6 @@ static void fragment_pseq_disasm(uint32_t *words)
 
 	printf("             ");
 	instruction_print_raw(inst);
-	printf("         ");
-	instruction_print_unknown(inst);
 
 	printf("    %s\n", buf);
 
@@ -693,7 +691,6 @@ out:
 	printf("    ");
 
 	instruction_print_raw(inst);
-	instruction_print_unknown(inst);
 
 	printf("    %s\n", buf);
 
@@ -788,7 +785,6 @@ static void fragment_mfu_disasm(uint32_t *words)
 	printf("    ");
 
 	instruction_print_raw(inst);
-	instruction_print_unknown(inst);
 
 	printf("    sfu: %s\n", sfu_buf);
 	printf("%52s", "");
@@ -820,8 +816,6 @@ static void fragment_tex_disasm(uint32_t *words)
 
 	printf("             ");
 	instruction_print_raw(inst);
-	printf("         ");
-	instruction_print_unknown(inst);
 
 	printf("    %s\n", buf);
 
@@ -845,8 +839,6 @@ static void fragment_dw_disasm(uint32_t *words)
 
 	printf("             ");
 	instruction_print_raw(inst);
-	printf("         ");
-	instruction_print_unknown(inst);
 
 	printf("    %s\n", buf);
 
@@ -1023,7 +1015,7 @@ static void shader_stream_dump(struct cgc_shader *shader, FILE *fp)
 					i + 1, bar->chunk_count, chunks[i].offset, chunks[i].length);
 			fragment_shader_disassemble(fs->words, length);
 
-			fprintf(fp, "signature: %.*s\n", 8, fs->signature);
+			// fprintf(fp, "signature: %.*s\n", 8, fs->signature);
 			fprintf(fp, "unknown0: 0x%08x\n", fs->unknown0);
 			fprintf(fp, "unknown1: 0x%08x\n", fs->unknown1);
 		}
@@ -1204,6 +1196,7 @@ static void hexdump_line(FILE *fp, uint8_t *bytes, int count)
 
 void cgc_shader_dump(struct cgc_shader *shader, FILE *fp)
 {
+#if 0
 	struct cgc_header *header = shader->binary;
 	unsigned int i, j;
 	const char *type;
@@ -1281,9 +1274,11 @@ void cgc_shader_dump(struct cgc_shader *shader, FILE *fp)
 		fprintf(fp, "      unknown10: 0x%08x\n", symbol->unknown10);
 		fprintf(fp, "      unknown11: 0x%08x\n", symbol->unknown11);
 	}
+#endif
 
 	cgc_shader_disassemble(shader, fp);
 
+#if 0
 	fprintf(fp, "  attributes:\n");
 	i = 0;
 
@@ -1331,4 +1326,5 @@ void cgc_shader_dump(struct cgc_shader *shader, FILE *fp)
 
 		i++;
 	}
+#endif
 }
