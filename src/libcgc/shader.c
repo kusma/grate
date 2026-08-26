@@ -1242,8 +1242,8 @@ void cgc_shader_dump(struct cgc_shader *shader, FILE *fp)
 	fprintf(fp, "  num_symbols: %u\n", header->num_symbols);
 	fprintf(fp, "  bar_size: %u\n", header->bar_size);
 	fprintf(fp, "  bar_offset: 0x%08x\n", header->bar_offset);
-	fprintf(fp, "  binary_size: %u\n", header->binary_size);
-	fprintf(fp, "  binary_offset: 0x%08x\n", header->binary_offset);
+	// fprintf(fp, "  binary_size: %u\n", header->binary_size);
+	// fprintf(fp, "  binary_offset: 0x%08x\n", header->binary_offset);
 	fprintf(fp, "  unknown01: 0x%08x\n", header->unknown01);
 	fprintf(fp, "  unknown02: 0x%08x\n", header->unknown02);
 	fprintf(fp, "  unknown03: 0x%08x\n", header->unknown03);
